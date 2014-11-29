@@ -48,6 +48,10 @@ def randomize_wallpaper(screen):
     selection = random.choice(wps)
     set_current_wallpaper(screen, selection)
 
+def blacklist_wallpaper(wallpaper):
+    # Blacklist a wallpaper, by adding BLACKLIST_EXTENSION to it, so glob won't find it.
+    os.rename(wallpaper, BLACKLIST_EXTENSION.format(wallpaper))
+
 def flush():
     # Use feh to set the actual background to the wallpapers in DIR/current
     x = ['feh'] + list(itertools.chain.from_iterable([['--bg-scale', wp] for wp in get_current_wallpapers()]))
