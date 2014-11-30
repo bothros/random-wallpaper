@@ -53,11 +53,14 @@ def set_current_wallpaper(screen, wallpaper):
         else:
             print(line.strip())
 
-def randomize_wallpaper(screen):
-# Randomize the current wallpaper at a screen
+def get_wallpapers(screen):
+    # Gets all wallpapers to select from for a screen
     loc = config['screens'][screen]['location']
-    wps = glob.glob(os.path.join(loc, GLOB_EXTENSION))
-    selection = random.choice(wps)
+    return glob.glob(os.path.join(loc, GLOB_EXTENSION))
+
+def randomize_wallpaper(screen):
+    # Randomize the current wallpaper at a screen
+    selection = random.choice(get_wallpapers(screen))
     set_current_wallpaper(screen, selection)
 
 def blacklist_wallpaper(wallpaper):
