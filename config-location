@@ -1,0 +1,7 @@
+# vim:filetype=yaml
+method: location
+screens:
+    1:
+        location: /path/to/wallpapers/1920x1080/
+    2:
+        location: /path/to/wallpapers/2440x1580/

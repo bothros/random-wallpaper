@@ -1,0 +1,7 @@
+# vim:filetype=yaml
+method: tags
+screens:
+    1:
+        query: wallpaper
+    2:
+        query: wallpaper
