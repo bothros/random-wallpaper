@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import subprocess
 import itertools
 import glob
@@ -17,6 +18,9 @@ CONFIG_FILE = 'config'
 
 BLACKLIST_EXTENSION = '{}.black'
 GLOB_EXTENSION = '*.jpg'
+
+BLACKLIST_TAG = 'blacklisted'
+WALLPAPER_TAG = 'wallpaper'
 
 
 def get_rw_dir():
@@ -58,8 +62,21 @@ def get_wallpapers(screen):
     if config.get('method') == 'location':
         loc = config['screens'][screen]['location']
         return glob.glob(os.path.join(loc, GLOB_EXTENSION))
+    elif config.get('method') == 'tags':
+        query = '({} and not {}) and ({})'.format(
+            WALLPAPER_TAG,
+            BLACKLIST_TAG,
+            config['screens'][screen]['query'],
+        )
+        return tmsu_files(query)
     else:
         raise(Exception("Invalid 'method' option in config."))
+
+def tmsu_files(query):
+    return [file.strip() for file in subprocess.check_output(['tmsu', 'files', query]).decode(sys.stdout.encoding).split()]
+
+def tmsu_tag(filename, tags):
+    subprocess.check_call(['tmsu', 'tag', filename] + tags)
 
 def randomize_wallpaper(screen):
     # Randomize the current wallpaper at a screen
@@ -70,6 +87,8 @@ def blacklist_wallpaper(wallpaper):
     # Blacklist a wallpaper, by adding BLACKLIST_EXTENSION to it, so glob won't find it.
     if config.get('method') == 'location':
         os.rename(wallpaper, BLACKLIST_EXTENSION.format(wallpaper))
+    elif config.get('method') == 'tags':
+        tmsu_tag(wallpaper, [BLACKLIST_TAG])
     else:
         raise(Exception("Invalid 'method' option in config."))
 

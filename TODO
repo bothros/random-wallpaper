@@ -1,7 +1,7 @@
 Add tmsu tag support
-    - query support
-    - blacklist tag
-    - add tag to current wallpaper interface
+    DONE query support
+    DONE blacklist tag
+    add tag to current wallpaper interface
 Add randr check
 Add back button
 DONE Better config file
