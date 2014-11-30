@@ -18,5 +18,6 @@ If method is 'tags', files with the tmsu tag 'wallpaper', that do not have the t
 
 Requirements:
 python3
+PyYAML
 feh
 tmsu (optional)
