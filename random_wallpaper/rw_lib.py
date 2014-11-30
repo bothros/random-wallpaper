@@ -55,8 +55,11 @@ def set_current_wallpaper(screen, wallpaper):
 
 def get_wallpapers(screen):
     # Gets all wallpapers to select from for a screen
-    loc = config['screens'][screen]['location']
-    return glob.glob(os.path.join(loc, GLOB_EXTENSION))
+    if config.get('method') == 'location':
+        loc = config['screens'][screen]['location']
+        return glob.glob(os.path.join(loc, GLOB_EXTENSION))
+    else:
+        raise(Exception("Invalid 'method' option in config."))
 
 def randomize_wallpaper(screen):
     # Randomize the current wallpaper at a screen
@@ -65,7 +68,10 @@ def randomize_wallpaper(screen):
 
 def blacklist_wallpaper(wallpaper):
     # Blacklist a wallpaper, by adding BLACKLIST_EXTENSION to it, so glob won't find it.
-    os.rename(wallpaper, BLACKLIST_EXTENSION.format(wallpaper))
+    if config.get('method') == 'location':
+        os.rename(wallpaper, BLACKLIST_EXTENSION.format(wallpaper))
+    else:
+        raise(Exception("Invalid 'method' option in config."))
 
 def flush():
     # Use feh to set the actual background to the wallpapers in DIR/current
