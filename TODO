@@ -4,3 +4,6 @@ Add tmsu tag support
     - add tag to current wallpaper interface
 Add randr check
 Add back button
+Better config file
+Move screens to 1, 2
+Support more than 2 screens
