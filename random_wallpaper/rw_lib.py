@@ -6,13 +6,14 @@ import itertools
 import glob
 import random
 import fileinput
+import yaml
 
 
 RANDOM_WALLPAPER_DIR = 'RANDOM_WALLPAPER_DIR'
 HOME = os.environ.get('HOME', '')
 DEFAULT_RANDOM_WALLPAPER_DIR = os.path.join(HOME, '.random_wallpaper')
 CURRENT_FILE = 'current'
-LOCATIONS_FILE = 'location'
+CONFIG_FILE = 'config'
 
 BLACKLIST_EXTENSION = '{}.black'
 GLOB_EXTENSION = '*.jpg'
@@ -21,6 +22,14 @@ GLOB_EXTENSION = '*.jpg'
 def get_rw_dir():
     # Get the directory for data and location config
     return os.environ.get(RANDOM_WALLPAPER_DIR, DEFAULT_RANDOM_WALLPAPER_DIR)
+
+def get_config():
+    # Get the contents of the config file
+    filename = os.path.join(get_rw_dir(), CONFIG_FILE)
+    with open(filename, 'r') as f:
+        return yaml.load(f)
+
+config = get_config()
 
 def get_current_wallpapers():
     # Get current wallpapers, as shown in DIR/current
@@ -44,17 +53,9 @@ def set_current_wallpaper(screen, wallpaper):
         else:
             print(line.strip())
 
-def get_wallpaper_location(screen):
-    # Get the wallpaper location for a screen, from DIR/location
-    filename = os.path.join(get_rw_dir(), LOCATIONS_FILE)
-    for line in fileinput.input(filename):
-        if fileinput.lineno() == screen:
-            loc = line.strip()
-    return loc
-
 def randomize_wallpaper(screen):
-    # Randomize the current wallpaper at a screen
-    loc = get_wallpaper_location(screen)
+# Randomize the current wallpaper at a screen
+    loc = config['screens'][screen]['location']
     wps = glob.glob(os.path.join(loc, GLOB_EXTENSION))
     selection = random.choice(wps)
     set_current_wallpaper(screen, selection)
