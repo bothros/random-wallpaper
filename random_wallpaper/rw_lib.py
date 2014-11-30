@@ -4,11 +4,11 @@ import os
 import sys
 import subprocess
 import itertools
-import glob
 import random
-import fileinput
 import yaml
 
+
+NUM_SCREENS = 2
 
 RANDOM_WALLPAPER_DIR = 'RANDOM_WALLPAPER_DIR'
 HOME = os.environ.get('HOME', '')
@@ -34,28 +34,44 @@ def get_config():
         return yaml.load(f)
 
 config = get_config()
+if config.get('method') == 'location':
+    import glob
 
 def get_current_wallpapers():
     # Get current wallpapers, as shown in DIR/current
     filename = os.path.join(get_rw_dir(), CURRENT_FILE)
-    return [line.strip() for line in fileinput.input(filename)]
+    try:
+        with open(filename, 'r') as f:
+            wps = yaml.load(f)
+            if len(wps) < NUM_SCREENS:
+                wps = wps + list(itertools.repeat(None, NUM_SCREENS-len(wps)))
+            return wps
+    except:
+        return list(itertools.repeat(None, NUM_SCREENS))
+    #return [line.strip() for line in fileinput.input(filename)]
 
 def get_current_wallpaper(screen):
     # Get current wallper for a screen, from DIR/current
     filename = os.path.join(get_rw_dir(), CURRENT_FILE)
-    for line in fileinput.input(filename):
-        if fileinput.lineno() == screen:
-            wp = line.strip()
-    return wp
+    with open(filename, 'r') as f:
+        return yaml.load(f)[screen-1]
+    #for line in fileinput.input(filename):
+        #if fileinput.lineno() == screen:
+            #wp = line.strip()
+    #return wp
 
 def set_current_wallpaper(screen, wallpaper):
     # Set current wallpaper at a screen, in DIR/current
     filename = os.path.join(get_rw_dir(), CURRENT_FILE)
-    for line in fileinput.input(filename, inplace=True):
-        if fileinput.lineno() == screen:
-            print(wallpaper)
-        else:
-            print(line.strip())
+    wp = get_current_wallpapers()
+    wp[screen-1] = wallpaper
+    with open(filename, 'w') as f:
+        f.write(yaml.dump(wp))
+    #for line in fileinput.input(filename, inplace=True):
+        #if fileinput.lineno() == screen:
+            #print(wallpaper)
+        #else:
+            #print(line.strip())
 
 def get_wallpapers(screen):
     # Gets all wallpapers to select from for a screen
@@ -73,7 +89,7 @@ def get_wallpapers(screen):
         raise(Exception("Invalid 'method' option in config."))
 
 def tmsu_files(query):
-    return [file.strip() for file in subprocess.check_output(['tmsu', 'files', query]).decode(sys.stdout.encoding).split()]
+    return [file.strip() for file in subprocess.check_output(['tmsu', 'files', query]).decode(sys.stdout.encoding).split('\n')]
 
 def tmsu_tag(filename, tags):
     subprocess.check_call(['tmsu', 'tag', filename] + tags)
