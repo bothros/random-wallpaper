@@ -27,11 +27,19 @@ def get_current_wallpapers():
     filename = os.path.join(get_rw_dir(), CURRENT_FILE)
     return [line.strip() for line in fileinput.input(filename)]
 
+def get_current_wallpaper(screen):
+    # Get current wallper for a screen, from DIR/current
+    filename = os.path.join(get_rw_dir(), CURRENT_FILE)
+    for line in fileinput.input(filename):
+        if fileinput.lineno() == screen:
+            wp = line.strip()
+    return wp
+
 def set_current_wallpaper(screen, wallpaper):
     # Set current wallpaper at a screen, in DIR/current
     filename = os.path.join(get_rw_dir(), CURRENT_FILE)
     for line in fileinput.input(filename, inplace=True):
-        if fileinput.lineno() == screen+1:
+        if fileinput.lineno() == screen:
             print(wallpaper)
         else:
             print(line.strip())
@@ -39,7 +47,10 @@ def set_current_wallpaper(screen, wallpaper):
 def get_wallpaper_location(screen):
     # Get the wallpaper location for a screen, from DIR/location
     filename = os.path.join(get_rw_dir(), LOCATIONS_FILE)
-    return [line.strip() for line in fileinput.input(filename)][screen]
+    for line in fileinput.input(filename):
+        if fileinput.lineno() == screen:
+            loc = line.strip()
+    return loc
 
 def randomize_wallpaper(screen):
     # Randomize the current wallpaper at a screen
